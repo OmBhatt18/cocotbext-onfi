@@ -1,18 +1,23 @@
 import sys
 import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/cocotbext/onfi')))
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import FallingEdge, RisingEdge, Timer
+from cocotb.triggers import RisingEdge, Timer
 from commands import txn, cmds
 from bus import Bus
 from memory import sigdict
-from driver import NFCOpcodeDriver
+from driver import NFCOpcodeDriver  
 
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/cocotbext/onfi')))
+
+# Clock generator for the testbench
 async def generate_clock(dut):
     """Generate clock pulses."""
     cocotb.start_soon(Clock(dut.iSystemClock, 1, units="ns").start())
+
+
 @cocotb.test()
 async def test_bus_signal_expansion(top):
     bus = Bus(top, name="inst_NFC_Physical_Top", signals=sigdict)
@@ -30,35 +35,40 @@ async def test_bus_signal_expansion(top):
             found = True
             break
     assert found, "Signal re_0_n (case-insensitive) not found"  
-    
-
-
 
 
 
 @cocotb.test()
-async def test_opcodes(dut):
-    # Define opcodes to test
+async def test_send_opcodes(dut):
+    
+    cocotb.start_soon(generate_clock(dut))
+
+    # Instantiating the Bus class with the DUT 
+    bus = Bus(NandFlashController_Top=dut, name="nand_controller")
+
+    # Instantiating the NFCOpcodeDriver with the DUT, Bus object, and clock signal
+    opcode_driver = NFCOpcodeDriver(dut, bus, dut.iSystemClock)
+
+   
     opcodes = [
-        ##0b100000,  # Select Way Opcode
-        ##0b100010,  # Set Column Address Opcode
-        ##0b100100,  # Set Row Address Opcode
-        0b000001  # Reset Opcode
-        ##0b000010,  # Set Feature Opcode
-        ##0b000101   # Get Feature Opcode
+        0b100010,  # Set Column Address
+        0b100100,  # Set Row Address
+        0b000001,  # Reset (Async)
+        0b000010,  # Set Feature (Async)
+        0b000101   # Get Feature (Sync)
     ]
 
+    
     for opcode in opcodes:
-        # Wait for the rising edge of the clock
-        await RisingEdge(dut.iSystemClock)
         
-        # Send the opcode
-        await driver._driver_send(opcode, delay_after_opcode=1000)  
 
-        # Optionally wait for some time to let the DUT process the opcode
-        await Timer(1000, units='ns')
+        await opcode_driver.send_opcode(opcode)
 
-        ##assert dut.iOpcode.value == opcode, f"Opcode {opcode} was not driven correctly."
+       
+        await Timer(1000, units='ns')  
+
+
+
 
 
 
@@ -70,7 +80,6 @@ async def test_opcodes(dut):
 
    
 
-'''
 
 @cocotb.test()
 async def test_reset(dut):
@@ -253,5 +262,8 @@ async def test_multi_plane_block_erase(dut):
     addr = [0x01, 0x02, 0x03]  # Example address
     await txn('multi_plane_block_erase', dut, addr=addr)  # Corrected command name
     await Timer(10, units='ns')
-'''
+
+
+
+
 

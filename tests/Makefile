@@ -1,8 +1,33 @@
+#export PATH := $(PATH):/home/om/intelFPGA/18.1/modelsim_ase/bin/
+#SIM ?= modelsim
+#TOPLEVEL_LANG ?= verilog
+
+
+#export PYTHONPATH := /home/om/tests/cocotbext-onfi/src/cocotbext/onfi
+#TOPLEVEL?=top
+
+
+
+#VERILOG_SOURCES += ../hdl/dummy_dut.v
+#VERILOG_SOURCES += ../hdl/nand_controller.v
+#VERILOG_SOURCES += ../hdl/top.v
+
+
+
+
+#MODULE = test_onfi
+
+#onfi:
+#	$(MAKE) sim MODULE=$(MODULE)
+
+#include $(shell cocotb-config --makefiles)/Makefile.sim
+#Working Makefile
+
 export PATH := $(PATH):/home/om/intelFPGA/18.1/modelsim_ase/bin/
 SIM ?= modelsim
 TOPLEVEL_LANG ?= verilog
 
-
+TESTS= test_bus_signal_expansion test_send_opcodes test_reset test_read_device_id test_block_erase test_standard_read test_read_cache_sequential test_read_cache_random test_copyback_read test_copyback_program test_copyback_read_with_data_output test_copyback_program_with_data_mod test_zq_calibration_long test_zq_calibration_short test_get_feature test_set_feature test_read_page test_random_data_input test_random_data_output test_program_page test_program_page_cache test_read_page_cache_sequential test_multi_plane_page_read test_multi_plane_page_program test_multi_plane_block_erase
 export PYTHONPATH := /home/om/tests/cocotbext-onfi/src/cocotbext/onfi
 TOPLEVEL?=NandFlashController_Top
 VERILOG_SOURCES += /opt/Xilinx/Vivado/2017.2/ids_lite/ISE/verilog/xeclib/unisims/IDELAYCTRL.v
@@ -140,11 +165,16 @@ VERILOG_SOURCES += ../hdl/NandFlashcontroller/tb/tb_NFC_Atom_Command_Generator_T
 VERILOG_SOURCES += ../hdl/NandFlashcontroller/tb/tb_NFC_Command_Issue_Top.v
 VERILOG_SOURCES += ../hdl/NandFlashcontroller/tb/tb_NFC_Physical_Top.v
 
+VSIM_ARGS += +memlimit=4096M
+
+
+
 
 
 MODULE = test_onfi
 
-onfi:
-	$(MAKE) sim MODULE=$(MODULE)
+onfi: $(TESTS)
 
+$(TESTS):
+	$(MAKE) sim MODULE=$(MODULE) TESTCASE=$@
 include $(shell cocotb-config --makefiles)/Makefile.sim
