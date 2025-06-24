@@ -1,9 +1,8 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1726578694" />
-    <testcase name="test_bus_signal_expansion" classname="test_onfi" file="/home/om/tests/cocotbext-onfi/tests/test_onfi.py" lineno="16" time="0.04361844062805176" sim_time_ns="0.001" ratio_time="0.02292608322537975" />
-    <testcase name="test_opcodes" classname="test_onfi" file="/home/om/tests/cocotbext-onfi/tests/test_onfi.py" lineno="39" time="0.01182413101196289" sim_time_ns="0.599" ratio_time="50.65911392507158">
-      <failure message="Test failed with RANDOM_SEED=1726578694" />
+    <property name="random_seed" value="1750786654" />
+    <testcase name="test_block_erase" classname="test_onfi" file="/home/om/tests/cocotbext-onfi/tests/test_onfi.py" lineno="98" time="111.8893609046936" sim_time_ns="447240.0" ratio_time="3997.162879328225">
+      <failure message="Test failed with RANDOM_SEED=1750786654" />
     </testcase>
   </testsuite>
 </testsuites>
