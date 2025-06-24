@@ -61,6 +61,7 @@ async def test_send_opcodes(dut):
     
     for opcode in opcodes:
         
+
         await opcode_driver.send_opcode(opcode)
 
        
